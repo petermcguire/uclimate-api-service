@@ -17,7 +17,7 @@ fun main() {
             basic("auth-basic") {
                 realm = "Access to the '/' path"
                 validate { credentials ->
-                    if (credentials.name == "uclimate" && credentials.password == "Y9X]`Dp(/{ycTQuK") {
+                    if (credentials.name == "" && credentials.password == "") {
                         UserIdPrincipal(credentials.name)
                     } else {
                         null

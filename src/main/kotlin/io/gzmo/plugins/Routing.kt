@@ -41,7 +41,7 @@ fun Application.configureRouting() {
                         serializer = KotlinxSerializer()
                     }
                 }
-                val openweather: Openweather = client.get("https://api.openweathermap.org/data/2.5/weather?lat=48.45325690191095&lon=-123.39907488016529&appid=608da98aac6fd11110539818290f7ace")
+                val openweather: Openweather = client.get("https://api.openweathermap.org/data/2.5/weather?lat=48.45325690191095&lon=-123.39907488016529&appid=")
                 val sensorWeather = SensorWeather(sensor, openweather)
                 val request = PutObjectRequest {
                     bucket = "uclimate"
