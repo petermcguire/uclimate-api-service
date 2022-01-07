@@ -17,7 +17,7 @@ fun main() {
             basic("auth-basic") {
                 realm = "Access to the '/' path"
                 validate { credentials ->
-                    if (credentials.name == "" && credentials.password == "") {
+                    if (credentials.name == System.getenv("uclimate_basicauth_username") && credentials.password == System.getenv("uclimate_basicauth_password")) {
                         UserIdPrincipal(credentials.name)
                     } else {
                         null
