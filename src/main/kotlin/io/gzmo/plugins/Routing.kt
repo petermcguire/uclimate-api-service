@@ -41,11 +41,12 @@ fun Application.configureRouting() {
                         serializer = KotlinxSerializer()
                     }
                 }
-                val openweather: Openweather = client.get("https://api.openweathermap.org/data/2.5/weather?lat=48.45325690191095&lon=-123.39907488016529&appid=" + System.getenv("uclimate_openweathermap_apikey"))
-                val sensorWeather = SensorWeather(sensor, openweather)
+                val openweather: Openweather = client.get("https://api.openweathermap.org/data/2.5/weather?lat=48.45325690191095&lon=-123.39907488016529&units=metric&appid=" + System.getenv("uclimate_openweathermap_apikey"))
+                val timestamp = Instant.now().toEpochMilli()
+                val sensorWeather = SensorWeather(timestamp, sensor, openweather)
                 val request = PutObjectRequest {
                     bucket = "uclimate"
-                    key = id + "-" + Instant.now().toEpochMilli().toString() + ".json"
+                    key = id + "-" + timestamp.toString() + ".json"
                     this.body = ByteStream.fromString(Json.encodeToString(sensorWeather))
                 }
                 S3Client { region = "us-west-2" }.use { s3 ->
