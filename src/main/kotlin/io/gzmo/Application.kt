@@ -9,7 +9,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
 fun main() {
-    embeddedServer(Netty, port = 3000) {
+    embeddedServer(Netty, port = 80) {
         install(ContentNegotiation) {
             json()
         }

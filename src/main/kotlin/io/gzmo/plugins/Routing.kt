@@ -45,26 +45,15 @@ fun Application.configureRouting() {
                 val openweather: Openweather = client.get("https://api.openweathermap.org/data/2.5/weather?lat=48.45325690191095&lon=-123.39907488016529&units=metric&appid=" + System.getenv("uclimate_openweathermap_apikey"))
                 val timestamp = Instant.now().toEpochMilli()
                 val sensorWeather = SensorWeather(timestamp, sensor, openweather)
-                val request = ListObjectsRequest {
+
+                val request = PutObjectRequest {
                     bucket = "uclimate"
+                    key = id + "-" + timestamp.toString() + ".json"
+                    this.body = ByteStream.fromString(Json.encodeToString(sensorWeather))
                 }
-
                 S3Client { region = "us-west-2" }.use { s3 ->
-
-                    val response = s3.listObjects(request)
-                    response.contents?.forEach { myObject ->
-                        println("The name of the key is ${myObject.key}")
-                    }
+                    val response =s3.putObject(request)
                 }
-
-//                val request = PutObjectRequest {
-//                    bucket = "uclimate"
-//                    key = id + "-" + timestamp.toString() + ".json"
-//                    this.body = ByteStream.fromString(Json.encodeToString(sensorWeather))
-//                }
-//                S3Client { region = "us-west-2" }.use { s3 ->
-//                    val response =s3.putObject(request)
-//                }
             }
         }
     }
