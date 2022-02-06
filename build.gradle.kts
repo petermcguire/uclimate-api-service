@@ -27,7 +27,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
-    implementation("aws.sdk.kotlin:s3:0.9.5-beta")
+    implementation("aws.sdk.kotlin:s3:0.12.0-beta")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }

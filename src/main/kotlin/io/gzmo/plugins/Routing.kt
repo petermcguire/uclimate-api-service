@@ -25,7 +25,7 @@ import java.time.Instant
 fun Application.configureRouting() {
     routing {
         get("/") {
-            call.respondText("Hello World!")
+            call.respondText("Hello World11!!")
         }
         get("/health") {
             call.respondText("HEALTHY")
@@ -49,9 +49,9 @@ fun Application.configureRouting() {
                     key = id + "-" + timestamp.toString() + ".json"
                     this.body = ByteStream.fromString(Json.encodeToString(sensorWeather))
                 }
-                S3Client { region = "us-west-2" }.use { s3 ->
-                    val response =s3.putObject(request)
-                }
+//                S3Client { region = "us-west-2" }.use { s3 ->
+//                    val response =s3.putObject(request)
+//                }
             }
         }
     }
