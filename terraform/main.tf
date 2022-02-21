@@ -108,7 +108,9 @@ resource "aws_iam_role_policy" "ec2_policy" {
       "Action": [
         "ecr:GetAuthorizationToken",
         "ecr:BatchGetImage",
-        "ecr:GetDownloadUrlForLayer"
+        "ecr:GetDownloadUrlForLayer",
+        "s3:*",
+        "s3-object-lambda:*"
       ],
       "Effect": "Allow",
       "Resource": "*"
@@ -122,7 +124,7 @@ resource "aws_instance" "web" {
   ami           = "ami-06cffe063efe892ad"
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.uclimate.id
-  key_name = "Kotlin Server"
+  key_name      = "Kotlin Server"
 
   user_data = <<-EOF
     #!/bin/bash
@@ -143,10 +145,23 @@ resource "aws_instance" "web" {
 
   tags = {
     project = "uclimate"
-    Name = "uclimate"
+    Name    = "uclimate"
   }
 
   monitoring              = true
   disable_api_termination = false
   ebs_optimized           = false
+}
+
+resource "aws_eip" "web" {
+  instance = aws_instance.web.id
+  vpc      = true
+}
+
+resource "aws_route53_record" "www" {
+  zone_id = "Z079033821740MUFD7UFW"
+  name    = "api.gzmo.io"
+  type    = "A"
+  ttl     = "300"
+  records = [aws_eip.web.public_ip]
 }
