@@ -6,6 +6,8 @@ terraform {
   required_version = ">= 0.12.0"
 }
 
+### Networking
+
 resource "aws_vpc" "uclimate" {
   cidr_block = "10.0.0.0/16"
   tags = {
@@ -44,25 +46,26 @@ resource "aws_ecr_repository" "uclimate" {
 
 ### EC2
 
-module "dev_ssh_sg" {
+module "uclimate_ssh_sg" {
   source = "terraform-aws-modules/security-group/aws"
 
-  name        = "ec2_sg"
-  description = "Security group for ec2_sg"
+  name        = "uclimate_ssh_sg"
+  description = "Security group for uclimate_ssh_sg"
   vpc_id      = aws_vpc.uclimate.id
 
   ingress_cidr_blocks = ["75.157.140.243/32"]
   ingress_rules       = ["ssh-tcp"]
 }
 
-module "ec2_sg" {
+module "uclimate_web_sg" {
   source = "terraform-aws-modules/security-group/aws"
 
-  name        = "ec2_sg"
-  description = "Security group for ec2_sg"
+  name        = "uclimate_web_sg"
+  description = "Security group for uclimate_web_sg"
   vpc_id      = aws_vpc.uclimate.id
 
-  ingress_cidr_blocks = ["75.157.140.243/32"]
+  # ingress_cidr_blocks = ["54.212.92.64/32"]
+  ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["http-80-tcp", "https-443-tcp", "all-icmp"]
   egress_rules        = ["all-all"]
 }
@@ -120,9 +123,9 @@ resource "aws_iam_role_policy" "ec2_policy" {
 EOF
 }
 
-resource "aws_instance" "web" {
+resource "aws_instance" "uclimate" {
   ami           = "ami-06cffe063efe892ad"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.uclimate.id
   key_name      = "Kotlin Server"
 
@@ -138,8 +141,8 @@ resource "aws_instance" "web" {
   EOF
 
   vpc_security_group_ids = [
-    module.ec2_sg.security_group_id,
-    module.dev_ssh_sg.security_group_id
+    module.uclimate_ssh_sg.security_group_id,
+    module.uclimate_web_sg.security_group_id
   ]
   iam_instance_profile = aws_iam_instance_profile.ec2_profile_uclimate.name
 
@@ -151,17 +154,4 @@ resource "aws_instance" "web" {
   monitoring              = true
   disable_api_termination = false
   ebs_optimized           = false
-}
-
-resource "aws_eip" "web" {
-  instance = aws_instance.web.id
-  vpc      = true
-}
-
-resource "aws_route53_record" "www" {
-  zone_id = "Z079033821740MUFD7UFW"
-  name    = "api.gzmo.io"
-  type    = "A"
-  ttl     = "300"
-  records = [aws_eip.web.public_ip]
 }
